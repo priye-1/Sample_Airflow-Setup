@@ -133,6 +133,9 @@ Enter docker shell
 docker  exec -it <container ID> bash
 ```
 
+Docker shell sample
+<img src="readme_images/docker_exec.png" alt="Docker"/>
+
 list files
 ```bash
 ls
