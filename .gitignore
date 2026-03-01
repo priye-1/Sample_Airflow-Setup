@@ -1,0 +1,73 @@
+# ==========================
+# Python
+# ==========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ==========================
+# Airflow
+# ==========================
+# Airflow logs
+logs/
+airflow/logs/
+
+# Airflow database (SQLite default)
+airflow.db
+*.db
+
+# PID files
+*.pid
+
+# ==========================
+# Environment variables
+# ==========================
+.env
+.env.*
+*.env
+
+# ==========================
+# Docker
+# ==========================
+*.tar
+docker-compose.override.yml
+
+# ==========================
+# IDE / Editor
+# ==========================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# macOS
+.DS_Store
+**/.DS_Store
+# ==========================
+# Testing / Coverage
+# ==========================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ==========================
+# Misc
+# ==========================
+*.log
+*.out
+*.err
+

@@ -1,0 +1,5 @@
+apache-airflow[postgres]
+apache-airflow[s3fs]
+pandas
+apache-airflow-providers-postgres
+pyarrow
