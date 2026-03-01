@@ -3,14 +3,14 @@
 
 Lightweight, containerized Apache Airflow setup using slim images. Designed for EasyPoC, local experimentation, and rapid DAG iteration without heavy infrastructure.
 
+> This is not intended for production workloads.
 
-## High-Level Overview
+### High-Level Overview
 
 This setup runs Airflow in standalone mode and includes:
 
 * Airflow and postgres Docker services
 * Core Airflow service bundles:
-  
   * Webserver
   * Scheduler
   * Triggerer
@@ -22,9 +22,8 @@ Optimized for:
 * Workflow prototyping
 * Architecture demonstrations
 
-> Not intended for production workloads.
 
-## Project Structure
+### Project Structure
 
 ```text
 config/                 # Airflow configuration
@@ -36,19 +35,18 @@ docker-compose.yml      # Builds and runs services
 
 ## Getting Started
 
-### Prerequisites
+#### Prerequisites
 
 * Docker
 * Docker Compose (v2 recommended)
 
 
-### Clone the Repository
+#### Clone the Repository
 
 ```bash
 git clone <repo-url>
 cd airflow
 ```
-
 
 ### Build and Start Infrastructure
 
@@ -82,22 +80,21 @@ docker compose down -v
 ```
 
 
-## Access the Airflow UI
+### Access the Airflow UI
 
 * URL: [http://localhost:8080](http://localhost:8080)
 * Username: `admin`
 * Password: Generated in terminal logs during first startup
 
 
-## Trigger the Workflow
+#### Trigger the Workflow
 
 1. Open the Airflow UI
 2. Enable the DAG
 3. Click **Trigger DAG**
 
 
-
-## Added DAGs
+#### Added DAGs
 
 ### Sample ETL DAG
 Demonstrates a simple ETL workflow using the TaskFlow API.
@@ -124,48 +121,33 @@ sample DAG Run
 
 * Writes transformed output to `bitcoin_price.csv`
 
+checking for output file, open another terminal:
 
-## Managing Environment Variables
-
-### Option 1 — `.env` File (Recommended)
-
+checking for container ID
 ```bash
-MY_KEY=my_value
+docker ps
 ```
 
-### Option 2 — Airflow Variables (UI)
+Enter docker shell
+```bash
+docker  exec -it <container ID> bash
+```
 
-1. Navigate to **Admin → Variables**
-2. Create:
-
-   * Key: `my_key`
-   * Value: `my_value`
-
-Use inside DAG:
-
-```python
-from airflow.models import Variable
-value = Variable.get("my_key")
+list files
+```bash
+ls
 ```
 
 
-## Installation Mode Used
+#### Installation Mode Used
 
 Slim standalone Airflow deployment:
-
 * Single container
-* SQLite metadata database
+* PostgreSQL database
 * SequentialExecutor
 
-Benefits:
 
-* Fast startup
-* Minimal resource usage
-* No external dependencies
-* Clean local developer experience
-
-
-## Production Deployment
+#### Production Deployment
 
 For production workloads requiring:
 
@@ -183,9 +165,8 @@ Documentation:
 [https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html)
 
 
-## Notes
+#### Notes
 
 * Logs are gitignored
-* `.env` files are not committed
 * Intended for local orchestration only
-* Easily extendable to Postgres or Celery
+* Easily extendable to parallel execution like Celery
