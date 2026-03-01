@@ -1,25 +1,37 @@
+
 # Airflow Orchestrator Architecture
 
-This example demonstrates a local  Airflow setup.
+Lightweight, containerized Apache Airflow setup using slim images. Designed for EasyPoC, local experimentation, and rapid DAG iteration without heavy infrastructure.
 
 
 ## High-Level Overview
 
-- **Airflow**: Schedules and orchestrates workflows
-- **DockerOperator**: Launches an external container to run business logic
-- **Component Container**: Executes the actual processing logic
-- **Docker-out-of-Docker (DooD)**: Airflow communicates with the host Docker Engine to start sibling containers
+This setup runs Airflow in standalone mode and includes:
 
+* Airflow and postgres Docker services
+* Core Airflow service bundles:
+  
+  * Webserver
+  * Scheduler
+  * Triggerer
 
+Optimized for:
+
+* Local development
+* DAG testing
+* Workflow prototyping
+* Architecture demonstrations
+
+> Not intended for production workloads.
 
 ## Project Structure
 
-> ```text
-> config/                 # Airflow configuration (webserver, scheduler, etc.)
-> dags/                   # Airflow DAG definitions
-> Dockerfile              # Image definition for Airflow services
-> docker-compose.yml      # Builds and runs Airflow + component images
-> ```
+```text
+config/                 # Airflow configuration
+dags/                   # DAG definitions
+Dockerfile              # Custom slim Airflow image
+docker-compose.yml      # Builds and runs services
+```
 
 
 ## Getting Started
@@ -32,115 +44,149 @@ This example demonstrates a local  Airflow setup.
 
 ### Clone the Repository
 
-> ```bash
-> git clone <repo-url>
-> cd airflow
-> ```
+```bash
+git clone <repo-url>
+cd airflow
+```
 
 
 ### Build and Start Infrastructure
 
-Navigate to the Airflow infrastructure directory:
-
-> ```bash
-> cd <home directory>
-> docker compose build
-> docker compose up
-> ```
+```bash
+docker compose build
+docker compose up
+```
 
 This will:
 
-* Build the **Airflow image**
-* Start Airflow services (webserver, dag processor, metadata DB)
+* Build the Airflow slim image
+* Initialize the metadata database
+* Start Airflow services
+
+Run in detached mode:
+
+```bash
+docker compose up
+```
+
+Stop services:
+
+```bash
+docker compose down
+```
+
+Clean reset (remove volumes):
+
+```bash
+docker compose down -v
+```
 
 
-To stop the airflow service:
+## Access the Airflow UI
 
-> ```bash
-> docker compose down
-> ```
-
-
-### Access the Airflow UI
-
-* URL: [http://localhost:8080](http://localhost:7070)
+* URL: [http://localhost:8080](http://localhost:8080)
 * Username: `admin`
-* Password: This should be retrieved from terminal
+* Password: Generated in terminal logs during first startup
 
 
-
-### Trigger the Workflow
-
-1. Open the Airflow UI
-2. Locate the DAG that runs the example component
-4. Trigger it manually from the UI
-
-<img src="readme_images/dag.png" alt="Created DAGS" />
-
-
-> ### Added DAGs
-> 
-> Two DAGs have been added:
-> 
-> 1. **sample ETL DAG**
->   This DAG demonstrates a simple ETL workflow using the Airflow TaskFlow API.
-
-   - Extract 
-   Fetches the current Bitcoin price from an external API.
-
-   - Transform 
-   Processes the API response into a pandas DataFrame containing:
-   - `usd` – current Bitcoin price in USD  
-   - `change` – 24-hour price change percentage  
-
-   - Load
-   Stores the transformed data into a CSV file (`bitcoin_price.csv`).
-
-<img src="readme_images/dagrun.png" alt="DAGS runs" />
-
-### Managing Environment Variables via Airflow UI
-
-Runtime configuration for tasks and components can also be managed using **Airflow Variables**:
+## Trigger the Workflow
 
 1. Open the Airflow UI
-2. Navigate to **Admin → Variables**
-3. Create a variable:
-   - **Key:** `<my key>`
-   - **Value:** `<>my value`
+2. Enable the DAG
+3. Click **Trigger DAG**
 
 
 
-### Airflow Installation Mode Used in This Project
+## Added DAGs
 
-This project uses a **slim, standalone Airflow deployment** where **all core services are embedded into a single container image**:
+### Sample ETL DAG
+Demonstrates a simple ETL workflow using the TaskFlow API.
 
-* Webserver
-* Scheduler
-* Triggerer
-* Metadata database
+Getting the password from terminal
+<img src="readme_images/terminal.png" alt="DAGS runs"/> 
 
-This setup is intentionally lightweight and suitable for:
-
-* Local development
-* Proofs of concept
-* Architecture demonstrations
+sample DAG Run
+<img src="readme_images/DAG.png" alt="Created DAGS"/>
 
 
 
-### Full Production Airflow Installation (Recommended for Production)
+**Extract**
 
-For a **full production-grade Airflow deployment** with:
+* Fetches current Bitcoin price from an external API
 
-* Separate services
+**Transform**
+
+* Converts API response into a pandas DataFrame:
+
+  * `usd` – current Bitcoin price
+  * `change` – 24-hour percentage change
+
+**Load**
+
+* Writes transformed output to `bitcoin_price.csv`
+
+
+## Managing Environment Variables
+
+### Option 1 — `.env` File (Recommended)
+
+```bash
+MY_KEY=my_value
+```
+
+### Option 2 — Airflow Variables (UI)
+
+1. Navigate to **Admin → Variables**
+2. Create:
+
+   * Key: `my_key`
+   * Value: `my_value`
+
+Use inside DAG:
+
+```python
+from airflow.models import Variable
+value = Variable.get("my_key")
+```
+
+
+## Installation Mode Used
+
+Slim standalone Airflow deployment:
+
+* Single container
+* SQLite metadata database
+* SequentialExecutor
+
+Benefits:
+
+* Fast startup
+* Minimal resource usage
+* No external dependencies
+* Clean local developer experience
+
+
+## Production Deployment
+
+For production workloads requiring:
+
 * External PostgreSQL
 * Redis
-* Celery or Kubernetes executors
+* CeleryExecutor or KubernetesExecutor
+* Horizontal scaling
 
-Use the **official Apache Airflow Docker Compose stack**.
+Use the official Apache Airflow Docker Compose stack:
 
-**Official `docker-compose.yaml` (Full Install)**
+Docker Compose:
 [https://airflow.apache.org/docs/apache-airflow/stable/docker-compose.yaml](https://airflow.apache.org/docs/apache-airflow/stable/docker-compose.yaml)
 
-**Documentation**
+Documentation:
 [https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html)
 
+
+## Notes
+
+* Logs are gitignored
+* `.env` files are not committed
+* Intended for local orchestration only
+* Easily extendable to Postgres or Celery
