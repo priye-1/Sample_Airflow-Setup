@@ -109,7 +109,6 @@ sample DAG Run
 <img src="readme_images/DAG.png" alt="Created DAGS"/>
 
 
-
 **Extract**
 
 * Fetches current Bitcoin price from an external API
