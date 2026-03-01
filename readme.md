@@ -77,7 +77,7 @@ docker compose down -v
 
 ### Access the Airflow UI
 
-* URL: [http://localhost:8080](http://localhost:8080)
+* URL: [http://localhost:7070](http://localhost:7070)
 * Username: `admin`
 * Password: Generated in terminal logs during first startup
 
