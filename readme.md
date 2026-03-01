@@ -61,11 +61,6 @@ This will:
 * Initialize the metadata database
 * Start Airflow services
 
-Run in detached mode:
-
-```bash
-docker compose up
-```
 
 Stop services:
 
@@ -169,7 +164,6 @@ Documentation:
 
 
 #### Notes
-
 * Logs are gitignored
 * Intended for local orchestration only
 * Easily extendable to parallel execution like Celery
